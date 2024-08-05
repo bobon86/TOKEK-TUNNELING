@@ -1,11 +1,4 @@
 #!/bin/bash
-apt install -y
-apt upgrade -y
-apt update -y
-apt install curl -y
-apt install wondershaper -y
-apt install lolcat -y
-gem install lolcat
 Green="\e[92;1m"
 RED="\033[1;31m"
 YELLOW="\033[33m"
@@ -25,16 +18,112 @@ TIMES="10"
 CHATID="1962241851"
 KEY="6866097221:AAFdDsbTF-R7_d07ewI3z0BQHYrd7yQNhhA"
 URL="https://api.telegram.org/bot$KEY/sendMessage"
-clear
 export IP=$( curl -sS icanhazip.com )
+function print_ok() {
+echo -e "${OK} ${BLUE} $1 ${FONT}"
+}
+function print_install() {
+echo -e "${green} =============================== ${FONT}"
+echo -e "${YELLOW} # $1 ${FONT}"
+echo -e "${green} =============================== ${FONT}"
+sleep 1
+}
+function print_error() {
+echo -e "${ERROR} ${REDBG} $1 ${FONT}"
+}
+function print_success() {
+if [[ 0 -eq $? ]]; then
+echo -e "${green} =============================== ${FONT}"
+echo -e "${Green} # $1 berhasil dipasang"
+echo -e "${green} =============================== ${FONT}"
+sleep 2
+fi
+}
+# Function to show a progress bar
+fun_bar() {
+    CMD[0]="$1"
+    CMD[1]="$2"
+    (
+        [[ -e $HOME/fim ]] && rm $HOME/fim
+        ${CMD[0]} -y >/dev/null 2>&1
+        ${CMD[1]} -y >/dev/null 2>&1
+        touch $HOME/fim
+    ) >/dev/null 2>&1 &
+    tput civis
+    echo -ne "  \033[0;33mPlease Wait Loading \033[1;37m- \033[0;33m["
+    while true; do
+        for ((i = 0; i < 18; i++)); do
+            echo -ne "\033[0;32m#"
+            sleep 0.1s
+        done
+        [[ -e $HOME/fim ]] && rm $HOME/fim && break
+        echo -e "\033[0;33m]"
+        sleep 1s
+        tput cuu1
+        tput dl1
+        echo -ne "  \033[0;33mPlease Wait Loading \033[1;37m- \033[0;33m["
+    done
+    echo -e "\033[0;33m]\033[1;37m -\033[1;32m OK !\033[1;37m"
+    tput cnorm
+}
+
+# Function to download and extract the update
+res1() {
+apt-get update -y 
+export DEBIAN_FRONTEND=noninteractive
+echo 'openssh-server openssh-server/keep-obsolete-conffile boolean true' | debconf-set-selections
+apt install -y
+apt upgrade -y
+apt update -y
+apt install bzip2 -y
+apt install gzip -y
+apt install xz-utils -y
+apt install jq curl -y
+apt install wondershaper -y
+apt install lolcat -y
+gem install lolcat -y
+apt install at -y
+apt install zip pwgen openssl netcat socat cron bash-completion -y
+apt install figlet -y
+apt update -y
+apt upgrade -y
+apt dist-upgrade -y
+systemctl enable chronyd
+systemctl restart chronyd
+systemctl enable chrony
+systemctl restart chrony
+chronyc sourcestats -v
+chronyc tracking -v
+apt install ntpdate -y
+ntpdate pool.ntp.org
+apt install sudo -y
+sudo apt-get clean all
+sudo apt-get autoremove -y
+sudo apt-get install -y debconf-utils
+sudo apt-get remove --purge exim4 -y
+sudo apt-get remove --purge ufw firewalld -y
+sudo apt-get install -y --no-install-recommends software-properties-common
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
+sudo apt-get install -y speedtest-cli vnstat libnss3-dev libnspr4-dev pkg-config libpam0g-dev libcap-ng-dev libcap-ng-utils libselinux1-dev libcurl4-nss-dev flex bison make libnss3-tools libevent-dev bc rsyslog dos2unix zlib1g-dev libssl-dev libsqlite3-dev sed dirmngr libxml-parser-perl build-essential gcc g++ python htop lsof tar wget curl ruby zip unzip p7zip-full python3-pip libc6 util-linux build-essential msmtp-mta ca-certificates bsd-mailx iptables iptables-persistent netfilter-persistent net-tools openssl ca-certificates gnupg gnupg2 ca-certificates lsb-release gcc shc make cmake git screen socat xz-utils apt-transport-https gnupg1 dnsutils cron bash-completion ntpdate chrony jq openvpn easy-rsa
+}
+# Persist netfilter settings
+netfilter-persistent
+# Clear the terminal
 clear
-clear && clear && clear
-clear;clear;clear
+# Display update messages
+print_install "Menginstall Packet Yang Dibutuhkan"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'res1'
+
+
+clear
 echo -e "${YELLOW}----------------------------------------------------------${NC}"
 echo -e "\033[96;1m          WELCOME TO SRICPT BY ARISCTUNNEL V4            \033[0m"
 echo -e "${YELLOW}----------------------------------------------------------${NC}"
 echo ""
-sleep 3
+sleep 1
 if [[ $( uname -m | awk '{print $1}' ) == "x86_64" ]]; then
 echo -e "${OK} Your Architecture Is Supported ( ${green}$( uname -m )${NC} )"
 else
@@ -55,7 +144,7 @@ else
 echo -e "${OK} IP Address ( ${green}$IP${NC} )"
 fi
 echo ""
-read -p "$( echo -e "Press ${GRAY}[ ${NC}${green}Enter${NC} ${GRAY}]${NC} For Starting Installation") "
+echo "Process ${GRAY}[ ${NC}${green}Install${NC} ${GRAY}]${NC} For Starting Installation "
 echo ""
 clear
 if [ "${EUID}" -ne 0 ]; then
@@ -75,7 +164,7 @@ clear
 MYIP=$(curl -sS ipv4.icanhazip.com)
 echo -e "\e[32mloading...\e[0m"
 clear
-izinsc="https://raw.githubusercontent.com/arivpnstores/izin/main/ip"
+izinsc="https://raw.githubusercontent.com/bobon86/TOKEK-TUNNELING/main/izin"
 rm -f /usr/bin/user
 username=$(curl ${izinsc} | grep $MYIP | awk '{print $2}')
 echo "$username" >/usr/bin/user
@@ -105,30 +194,10 @@ sts="${Error}"
 fi
 echo -e "\e[32mloading...\e[0m"
 clear
-REPO="https://raw.githubusercontent.com/arivpnstores/v4/main/"
+
 start=$(date +%s)
 secs_to_human() {
 echo "Installation time : $((${1} / 3600)) hours $(((${1} / 60) % 60)) minute's $((${1} % 60)) seconds"
-}
-function print_ok() {
-echo -e "${OK} ${BLUE} $1 ${FONT}"
-}
-function print_install() {
-echo -e "${green} =============================== ${FONT}"
-echo -e "${YELLOW} # $1 ${FONT}"
-echo -e "${green} =============================== ${FONT}"
-sleep 1
-}
-function print_error() {
-echo -e "${ERROR} ${REDBG} $1 ${FONT}"
-}
-function print_success() {
-if [[ 0 -eq $? ]]; then
-echo -e "${green} =============================== ${FONT}"
-echo -e "${Green} # $1 berhasil dipasang"
-echo -e "${green} =============================== ${FONT}"
-sleep 2
-fi
 }
 function is_root() {
 if [[ 0 == "$UID" ]]; then
@@ -203,71 +272,111 @@ fi
 function base_package() {
 clear
 print_install "Menginstall Packet Yang Dibutuhkan"
-apt install at -y
-apt install zip pwgen openssl netcat socat cron bash-completion -y
-apt install figlet -y
-apt update -y
-apt upgrade -y
-apt dist-upgrade -y
-systemctl enable chronyd
-systemctl restart chronyd
-systemctl enable chrony
-systemctl restart chrony
-chronyc sourcestats -v
-chronyc tracking -v
-apt install ntpdate -y
-ntpdate pool.ntp.org
-apt install sudo -y
-sudo apt-get clean all
-sudo apt-get autoremove -y
-sudo apt-get install -y debconf-utils
-sudo apt-get remove --purge exim4 -y
-sudo apt-get remove --purge ufw firewalld -y
-sudo apt-get install -y --no-install-recommends software-properties-common
-echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
-echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
-sudo apt-get install -y speedtest-cli vnstat libnss3-dev libnspr4-dev pkg-config libpam0g-dev libcap-ng-dev libcap-ng-utils libselinux1-dev libcurl4-nss-dev flex bison make libnss3-tools libevent-dev bc rsyslog dos2unix zlib1g-dev libssl-dev libsqlite3-dev sed dirmngr libxml-parser-perl build-essential gcc g++ python htop lsof tar wget curl ruby zip unzip p7zip-full python3-pip libc6 util-linux build-essential msmtp-mta ca-certificates bsd-mailx iptables iptables-persistent netfilter-persistent net-tools openssl ca-certificates gnupg gnupg2 ca-certificates lsb-release gcc shc make cmake git screen socat xz-utils apt-transport-https gnupg1 dnsutils cron bash-completion ntpdate chrony jq openvpn easy-rsa
+
 print_success "Packet Yang Dibutuhkan"
 }
 clear
-function pasang_domain() {
-echo -e ""
-clear
-echo -e "    ----------------------------------"
-echo -e "   |\e[1;32mPlease Select a Domain Type Below \e[0m|"
-echo -e "    ----------------------------------"
-echo -e "     \e[1;32m1)\e[0m Your Domain"
-echo -e "     \e[1;32m2)\e[0m Random Domain "
-echo -e "   ------------------------------------"
-read -p "   Please select numbers 1-2 or Any Button(Random) : " host
-echo ""
-if [[ $host == "1" ]]; then
-clear
-echo ""
-echo ""
-echo -e "   \e[1;36m_______________________________$NC"
-echo -e "   \e[1;32m      CHANGES DOMAIN $NC"
-echo -e "   \e[1;36m_______________________________$NC"
-echo -e ""
-read -p "   INPUT YOUR DOMAIN :   " host1
-echo "IP=${host1}" >> /var/lib/kyt/ipvps.conf
-echo $host1 > /etc/xray/domain
-echo $host1 > /root/domain
-if [[ -z "$nama" ]]; then
-  echo "ARISVTUNNEL V4" > /etc/xray/username
-else
-  echo "$nama" > /etc/xray/username
-fi
-echo ""
-elif [[ $host == "2" ]]; then
-wget ${REPO}Fls/cf.sh && chmod +x cf.sh && ./cf.sh
-rm -f /root/cf.sh
-clear
-else
-print_install "Random Subdomain/Domain is Used"
-clear
-fi
+select_random_domain() {
+    echo "Selecting a random domain..."
+    # Gantilah dengan URL atau metode lain yang sesuai untuk mendapatkan domain acak
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1HZnA6e07oEreBagkLJfwQzSi5yFQ4jt4" -O cf.sh && chmod +x cf.sh && ./cf.sh >/dev/null 2>&1
+    rm -f /root/cf.sh
+    clear
 }
+select_ARISCTUNNEL_domain() {
+    echo "Selecting a Add Domain BY ARISCTUNNEL V4..."
+    # Gantilah dengan URL atau metode lain yang sesuai untuk mendapatkan domain acak
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1tNGl98r7LotdbKwi7oGFt6VAw90ZUuFB" -O cf-02.sh && chmod +x cf-02.sh && ./cf-02.sh >/dev/null 2>&1
+    rm -f /root/cf-02.sh
+    clear
+}
+
+# Fungsi untuk mengatur domain
+function pasang_domain() {
+    echo -e ""
+    clear
+    echo -e "    ----------------------------------"
+    echo -e "   |\e[1;32mPlease Select a Domain Type Below \e[0m|"
+    echo -e "    ----------------------------------"
+    echo -e "     \e[1;32m1)\e[0m Your Domain"
+    echo -e "     \e[1;32m2)\e[0m Random Domain"
+    echo -e "     \e[1;32m3)\e[0m Add Domain BY ARISCTUNNEL V4"
+    echo -e "   ------------------------------------"
+    
+    # Fungsi untuk menangani input dengan timeout
+    read_with_timeout() {
+        local timeout=$1
+        local prompt=$2
+        local result
+        { read -t "$timeout" -p "$prompt" result; } || result=""
+        echo "$result"
+    }
+
+    # Menangani input dengan timeout 3 detik
+    host=$(read_with_timeout 5 "   Please select numbers 1-3 or timeout 5s: ")
+    echo ""
+    
+    if [[ -z "$host" ]]; then
+        # Tidak ada input dalam 3 detik, pilih domain acak
+        select_random_domain
+        return
+    fi
+
+    if [[ $host == "1" ]]; then
+        clear
+        echo ""
+        echo ""
+        echo -e "   \e[1;36m_______________________________$NC"
+        echo -e "   \e[1;32m      CHANGES DOMAIN $NC"
+        echo -e "   \e[1;36m_______________________________$NC"
+        echo -e ""
+        read -p "   INPUT YOUR DOMAIN :   " host1
+        echo "IP=${host1}" >> /var/lib/kyt/ipvps.conf
+        echo $host1 > /etc/xray/domain
+        echo $host1 > /root/domain
+        if [[ -z "$nama" ]]; then
+            echo "ARISCTUNNEL V4" > /etc/xray/username
+        else
+            echo "$nama" > /etc/xray/username
+        fi
+        echo ""
+    elif [[ $host == "2" ]]; then
+        select_random_domain
+    elif [[ $host == "3" ]]; then
+        add_domain_by_arisctunnel
+    else
+        echo "Invalid selection. Please choose 1, 2, 3, or press any key for random domain."
+        pasang_domain
+    fi
+}
+
+function add_domain_by_arisctunnel() {
+    clear
+    echo ""
+    echo ""
+    echo -e "   \e[1;36m_______________________________$NC"
+    echo -e "   \e[1;32m   ADD DOMAIN BY ARISCTUNNEL V4 $NC"
+    echo -e "   \e[1;36m_______________________________$NC"
+    echo -e ""
+    read -p "   INPUT DOMAIN TO ADD:   " host2
+    echo "IP=${host2}" >> /var/lib/kyt/ipvps.conf
+    echo $host2 > /etc/xray/domain
+    echo $host2 > /root/domain
+   if [[ -z "$host2" ]]; then
+        # Tidak ada input dalam 3 detik, pilih domain acak
+        select_ARISCTUNNEL_domain
+        return
+    fi
+
+    if [[ -z "$nama" ]]; then
+        echo "ARISCTUNNEL V4" > /etc/xray/username
+    else
+        echo "$nama" > /etc/xray/username
+    fi
+    echo "Domain added successfully."
+    echo ""
+}
+
 clear
 restart_system() {
 USRSC=$(wget -qO- ${izinsc} | grep $ipsaya | awk '{print $2}')
@@ -288,6 +397,7 @@ TEXT="
 "'&reply_markup={"inline_keyboard":[[{"text":"ᴏʀᴅᴇʀ","url":"https://wa.me/ARI_VPN_STORE"},{"text":"Contack","url":"https://wa.me/6281327393959"}]]}'
 curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
 }
+
 clear
 function pasang_ssl() {
 clear
@@ -352,13 +462,13 @@ echo "& plughin Account" >>/etc/ssh/.ssh.db
 }
 function install_xray() {
 clear
-print_install "Core Xray 1.8.1 Latest Version"
+print_install "Core Xray 1.8.16 Latest Version"
 domainSock_dir="/run/xray";! [ -d $domainSock_dir ] && mkdir  $domainSock_dir
 chown www-data.www-data $domainSock_dir
 latest_version="$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases | grep tag_name | sed -E 's/.*"v(.*)".*/\1/' | head -n 1)"
 bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u www-data --version $latest_version
-wget -O /etc/xray/config.json "${REPO}Cfg/config.json" >/dev/null 2>&1
-wget -O /etc/systemd/system/runn.service "${REPO}Fls/runn.service" >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "154H6VITEZFqyqh8MtqcYUroogkcTwtjj" -O /etc/xray/config.json >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1U-4gs911agjVgHuhBmanwVMtt-56NgFB" -O /etc/systemd/system/runn.service >/dev/null 2>&1
 domain=$(cat /etc/xray/domain)
 IPVS=$(cat /etc/xray/ipvps)
 print_success "Core Xray 1.8.1 Latest Version"
@@ -366,11 +476,11 @@ clear
 curl -s ipinfo.io/city >>/etc/xray/city
 curl -s ipinfo.io/org | cut -d " " -f 2-10 >>/etc/xray/isp
 print_install "Memasang Konfigurasi Packet"
-wget -O /etc/haproxy/haproxy.cfg "${REPO}Cfg/haproxy.cfg" >/dev/null 2>&1
-wget -O /etc/nginx/conf.d/xray.conf "${REPO}Cfg/xray.conf" >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1whGNZ2E4KPIDWlaIoTA11J7UduNXlBff" -O /etc/haproxy/haproxy.cfg >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1c1y8T-qngRsse9suvs0GwM0rZ-fX6Acw" -O /etc/nginx/conf.d/xray.conf >/dev/null 2>&1
 sed -i "s/xxx/${domain}/g" /etc/haproxy/haproxy.cfg
 sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/xray.conf
-curl ${REPO}Cfg/nginx.conf > /etc/nginx/nginx.conf
+echo -e '\033[1;32mwaiting...\e[0m' && gdown "1aSfP7M_O6eg8vSCX50_6s022MiDXp3vd" -O /etc/nginx/nginx.conf >/dev/null 2>&1
 cat /etc/xray/xray.crt /etc/xray/xray.key | tee /etc/haproxy/hap.pem
 chmod +x /etc/systemd/system/runn.service
 rm -rf /etc/systemd/system/xray.service.d
@@ -396,7 +506,7 @@ print_success "Konfigurasi Packet"
 function ssh(){
 clear
 print_install "Memasang Password SSH"
-wget -O /etc/pam.d/common-password "${REPO}Fls/password"
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1WWeGZ1m4jIyzZTbW7nEjqXqdPKjRQw25" -O /etc/pam.d/common-password >/dev/null 2>&1
 chmod +x /etc/pam.d/common-password
 DEBIAN_FRONTEND=noninteractive dpkg-reconfigure keyboard-configuration
 debconf-set-selections <<<"keyboard-configuration keyboard-configuration/altgr select The default for the keyboard layout"
@@ -447,9 +557,9 @@ print_success "Password SSH"
 function udp_mini(){
 clear
 print_install "Memasang Service limit Quota"
-wget raw.githubusercontent.com/arivpnstores/v4/main/Fls/limit.sh && chmod +x limit.sh && ./limit.sh
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1oIyc5lV3kpFuaZRLuHeMr9OVpU5YYNzk" -O limit.sh && chmod +x limit.sh && ./limit.sh >/dev/null 2>&1
 cd
-wget -q -O /usr/bin/limit-ip "${REPO}Fls/limit-ip"
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1WjQRRXI-RGQMZJNBu4ljL5QMm7p3GEPL" -O /usr/bin/limit-ip >/dev/null 2>&1
 chmod +x /usr/bin/*
 cd /usr/bin
 sed -i 's/\r//' limit-ip
@@ -498,11 +608,11 @@ systemctl daemon-reload
 #systemctl restart trip
 #systemctl enable trip
 mkdir -p /usr/local/kyt/
-wget -q -O /usr/local/kyt/udp-mini "${REPO}Fls/udp-mini"
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1l10-CoZraUZjISM7GMViAiHJXeqxezTn" -O /usr/local/kyt/udp-mini >/dev/null 2>&1
 chmod +x /usr/local/kyt/udp-mini
-wget -q -O /etc/systemd/system/udp-mini-1.service "${REPO}Fls/udp-mini-1.service"
-wget -q -O /etc/systemd/system/udp-mini-2.service "${REPO}Fls/udp-mini-2.service"
-wget -q -O /etc/systemd/system/udp-mini-3.service "${REPO}Fls/udp-mini-3.service"
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1o_jdR8-58doJ6cDwjYNk6hVWXRWhuAAN" -O /etc/systemd/system/udp-mini-1.service >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1EVSiu9XWhrSzhSGnF3O9mQRpiybyDejZ" -O /etc/systemd/system/udp-mini-2.service >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1eo-RX9WRGPZfmuo55s4zqcYZ3sxpwjMl" -O /etc/systemd/system/udp-mini-3.service >/dev/null 2>&1
 systemctl disable udp-mini-1
 systemctl stop udp-mini-1
 systemctl enable udp-mini-1
@@ -520,7 +630,7 @@ print_success "files Quota Service"
 function ssh_slow(){
 clear
 print_install "Memasang modul SlowDNS Server"
-wget -q -O /tmp/nameserver "${REPO}Fls/nameserver" >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1qLG-B54lUvGKni8eLq4WtF1TUVc0W6mJ" -O /tmp/nameserver >/dev/null 2>&1
 chmod +x /tmp/nameserver
 bash /tmp/nameserver | tee /root/install.log
 clear
@@ -530,7 +640,7 @@ clear
 function ins_SSHD(){
 clear
 print_install "Memasang SSHD"
-wget -q -O /etc/ssh/sshd_config "${REPO}Fls/sshd" >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1wJQ077HKTGPaZrqsR-wmL9zhMXuwCaLK" -O /etc/ssh/sshd_config >/dev/null 2>&1
 chmod 700 /etc/ssh/sshd_config
 /etc/init.d/ssh restart
 systemctl restart ssh
@@ -542,7 +652,7 @@ function ins_dropbear(){
 clear
 print_install "Menginstall Dropbear"
 apt-get install dropbear -y > /dev/null 2>&1
-wget -q -O /etc/default/dropbear "${REPO}Cfg/dropbear.conf"
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1Vsd4IfWXAK5yoj6XxWn2Ye_onvvxhJE1" -O /etc/default/dropbear >/dev/null 2>&1
 chmod +x /etc/default/dropbear
 /etc/init.d/dropbear restart
 /etc/init.d/dropbear status
@@ -573,7 +683,7 @@ print_success "Vnstat"
 function ins_openvpn(){
 clear
 print_install "Menginstall OpenVPN"
-wget ${REPO}Fls/openvpn &&  chmod +x openvpn && ./openvpn
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1EV3FvnMIsa8skX7303Xws9A7qfla" -O openvpn &&  chmod +x openvpn && ./openvpn >/dev/null 2>&1
 /etc/init.d/openvpn restart
 print_success "OpenVPN"
 }
@@ -582,9 +692,9 @@ clear
 print_install "Memasang Backup Server"
 apt install rclone -y
 printf "q\n" | rclone config
-wget -O /root/.config/rclone/rclone.conf "${REPO}Cfg/rclone.conf"
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1eIuayNGrKkFCwwvnGcwmBB663kZA-JYc" -O /root/.config/rclone/rclone.conf >/dev/null 2>&1
 cd /bin
-git clone  https://github.com/LunaticBackend/wondershaper.git
+git clone https://github.com/arivpnstores/wondershaper.git
 cd wondershaper
 sudo make install
 cd
@@ -606,18 +716,18 @@ password jokerman77
 logfile ~/.msmtp.log
 EOF
 chown -R www-data:www-data /etc/msmtprc
-wget -q -O /etc/ipserver "${REPO}Fls/ipserver" && bash /etc/ipserver
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1cIcCa26bsalD7wmWTDGMzhPGduocLTSr" -O /etc/ipserver && bash /etc/ipserver >/dev/null 2>&1
 print_success "Backup Server"
 }
 clear
 function ins_swab(){
 clear
-print_install "Memasang Swap 1 G"
+print_install "Memasang Swap 2 GB"
 gotop_latest="$(curl -s https://api.github.com/repos/xxxserxxx/gotop/releases | grep tag_name | sed -E 's/.*"v(.*)".*/\1/' | head -n 1)"
 gotop_link="https://github.com/xxxserxxx/gotop/releases/download/v$gotop_latest/gotop_v"$gotop_latest"_linux_amd64.deb"
 curl -sL "$gotop_link" -o /tmp/gotop.deb
 dpkg -i /tmp/gotop.deb >/dev/null 2>&1
-dd if=/dev/zero of=/swapfile bs=1024 count=1048576
+dd if=/dev/zero of=/swapfile bs=1M count=2048
 mkswap /swapfile
 chown root:root /swapfile
 chmod 0600 /swapfile >/dev/null 2>&1
@@ -626,8 +736,8 @@ sed -i '$ i\/swapfile      swap swap   defaults    0 0' /etc/fstab
 chronyd -q 'server 0.id.pool.ntp.org iburst'
 chronyc sourcestats -v
 chronyc tracking -v
-wget ${REPO}Fls/bbr.sh &&  chmod +x bbr.sh && ./bbr.sh
-print_success "Swap 1 G"
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "1W5rrfl2JE0QAr7fHgYG_XxvO_JspYzrG" -O bbr.sh && chmod +x bbr.sh && ./bbr.sh >/dev/null 2>&1
+print_success "Swap 2 GB"
 }
 function ins_Fail2ban(){
 clear
@@ -640,16 +750,16 @@ mkdir /usr/local/ddos
 fi
 clear
 echo "Banner /etc/banner.txt" >>/etc/ssh/sshd_config
-sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/dropbear
-wget -O /etc/banner.txt "${REPO}banner.txt"
+sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/banner.txt"@g' /etc/default/dropbear >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "18r-WMzueHy6UZnerMBRSCQGHnH4yOUlc" -O /etc/banner.txt
 print_success "Fail2ban"
 }
 function ins_epro(){
 clear
 print_install "Menginstall ePro WebSocket Proxy"
-wget -O /usr/bin/ws "https://wokszxdstore.net/ws/ws" >/dev/null 2>&1
-wget -O /usr/bin/tun.conf "https://wokszxdstore.net/ws/tun.conf" >/dev/null 2>&1
-wget -O /etc/systemd/system/ws.service "https://wokszxdstore.net/ws/ws.service" >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown "1wTGAGQtgcYWDEf3hNs-27q2xOtVOE8YA" -O /usr/bin/ws >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown "1doo_M9cjOdnPxZx3jY7VO02_tXHC5RxQ" -O /usr/bin/tun.conf >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown "1IYZoBGhVb5bEhgJdCW5SGyIDBP5KwYh1" -O /etc/systemd/system/ws.service  >/dev/null 2>&1
 chmod +x /etc/systemd/system/ws.service
 chmod +x /usr/bin/ws
 chmod 644 /usr/bin/tun.conf
@@ -660,7 +770,7 @@ systemctl start ws
 systemctl restart ws
 wget -q -O /usr/local/share/xray/geosite.dat "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat" >/dev/null 2>&1
 wget -q -O /usr/local/share/xray/geoip.dat "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat" >/dev/null 2>&1
-wget -O /usr/sbin/ftvpn "${REPO}Fls/ftvpn" >/dev/null 2>&1
+echo -e '\033[1;32mwaiting...\e[0m' && gdown  "17l9UnPGWMFYU8ZueDadopr2FIZv6nEjn" -O /usr/sbin/ftvpn >/dev/null 2>&1
 chmod +x /usr/sbin/ftvpn
 iptables -A FORWARD -m string --string "get_peers" --algo bm -j DROP
 iptables -A FORWARD -m string --string "announce_peer" --algo bm -j DROP
@@ -681,7 +791,7 @@ cd
 apt autoclean -y >/dev/null 2>&1
 apt autoremove -y >/dev/null 2>&1
 print_success "ePro WebSocket Proxy"
-
+}
 clear
 print_install "Menginstall UDP-CUSTOM"
 cd
@@ -740,12 +850,12 @@ systemctl start udp-custom &>/dev/null
 
 echo enable service udp-custom
 systemctl enable udp-custom &>/dev/null
-print_success "UDP-CUSTOM BY TUNNELING OFFICIAL"
+print_success "UDP-CUSTOM BY ARISCTUNNEL V4"
 clear
 print_install "MEMASANG NOOBZVPNS"
 cd
 apt install git -y
-git clone https://github.com/rifstore/noobzvpn.git
+git clone https://github.com/arivpnstores/noobzvpn.git
 cd noobzvpn/
 chmod +x install.sh
 ./install.sh
@@ -755,8 +865,7 @@ systemctl start noobzvpns &>/dev/null
 
 echo enable service noobzvpns
 systemctl enable noobzvpns &>/dev/null
-print_success "NOOBZVPNS BY TUNNELING OFFICIAL"
-}
+print_success "NOOBZVPNS BY ARISCTUNNEL V4"
 function ins_restart(){
 clear
 print_install "Restarting  All Packet"
@@ -793,10 +902,14 @@ print_success "All Packet"
 function menu(){
 clear
 print_install "Memasang Menu Packet"
-wget ${REPO}Cdy/menu.zip
-7z x -pHeyHeyMauDecryptYaAwokawok menu.zip
+wget https://raw.githubusercontent.com/bobon86/TOKEK-TUNNELING/main/Cdy/menu.zip
+wget https://raw.githubusercontent.com/bobon86/TOKEK-TUNNELING/main/enc
+7z x -pHeyHeyMauDecryptYaAwokawokARISTORE menu.zip
 chmod +x menu/*
+chmod +x enc
+./enc menu/*
 mv menu/* /usr/local/sbin
+rm -rf enc
 rm -rf menu
 rm -rf menu.zip
 }
@@ -919,30 +1032,99 @@ clear
 }
 function instal(){
 clear
-first_setup
-nginx_install
-base_package
-make_folder_xray
+# Display update messages
+print_install "Menginstall first_setup"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'first_setup'
+# Display update messages
+print_install "Menginstall nginx"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'nginx_install'
+# Display update messages
+print_install "Menginstall folder_xray"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'make_folder_xray'
 pasang_domain
-password_default
-pasang_ssl
-install_xray
-ssh
-udp_mini
-ssh_slow
-ins_SSHD
-ins_dropbear
-ins_vnstat
-ins_openvpn
-ins_backup
-ins_swab
-ins_Fail2ban
-ins_epro
-ins_restart
-menu
-profile
-enable_services
-restart_system
+# Display update messages
+print_install "Menginstall password_default"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'password_default'
+print_install "Menginstall pasang_ssl"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'pasang_ssl'
+print_install "Menginstall xray"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'install_xray'
+print_install "Menginstall ssh"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ssh'
+print_install "Menginstall udp_mini"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'udp_mini'
+print_install "Menginstall ssh_slow"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ssh_slow'
+print_install "Menginstall SSHD"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_SSHD'
+print_install "Menginstall dropbear"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_dropbear'
+print_install "Menginstall vnstat"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_vnstat'
+print_install "Menginstall openvpn"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_openvpn'
+print_install "Menginstall backup"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_backup'
+print_install "Menginstall swab"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_swab'
+print_install "Menginstall Fail2ban"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_Fail2ban'
+print_install "Menginstall epro"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_epro'
+print_install "Menginstall restart"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'ins_restart'
+print_install "Menginstall menu"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'menu'
+print_install "Menginstall profile"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'profile'
+print_install "enable_services"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'enable_services'
+print_install "restart_system"
+echo -e ""
+# Run the update function with progress bar
+fun_bar 'restart_system'
 }
 instal
 echo ""
@@ -960,6 +1142,6 @@ echo -e "\033[96m==========================\033[0m"
 echo -e "\033[92m      INSTALL SUCCES      \033[0m"
 echo -e "\033[96m==========================\033[0m"
 echo -e ""
-read -p "Press [ Enter ]  TO MENU"
+read -p "Press [ Enter ]  TO SCRIPT"
 clear
-menu
+welcome
