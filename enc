@@ -17,7 +17,7 @@ if test $# = 0; then
   echo  "          ${CYAN}=============================================================${NC}"
   echo  "          ${RED}#${NC}            ${GREEN} USAGE : ketik enc spasi namafile${NC}             ${RED} #${NC}"
   echo  " ${YELLOW}         -------------------------------------------------------------${NC}"
-  echo  "          ${RED}#${NC}          ${GREEN}   [ Copyright @ -  ARI (2024) ] ${NC}            ${RED}#${NC}"
+  echo  "          ${RED}#${NC}          ${GREEN}   [ Copyright @ -  TOKEK TUNNELING (2024) ] ${NC}            ${RED}#${NC}"
    echo  "${BLUE}          =============================================================${NC}"
   exit 1
 fi
